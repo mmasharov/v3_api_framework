@@ -1,0 +1,6 @@
+/.venv/
+__pycache__/
+/export/
+
+/vis.crt
+/dev.py
