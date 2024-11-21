@@ -49,12 +49,15 @@ class DashboardService(ApiRequest):
             return self.__response
         
     def getDefaultTheme(self):
+        '''Метод получения идентификатора темы по умолчанию.'''
         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/themes'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest().json()
         return list(filter((lambda ob: ob['isSystem'] and ob['name'] == 'Системная (по умолчанию)'), self.__response))[0]['themeGuid']
     
     def importDSEntity(self, entity: str, data: dict):
+        '''Метод импорта сущностей Dashboard Service.\n
+        Поддерживает темы и пользовательские виджеты.'''
         if entity not in self.__entities:
             raise Exception('Unknown entity!')
         
@@ -71,6 +74,7 @@ class DashboardService(ApiRequest):
         print(self.__response.status_code, self.__response.text)
     
     def createDashboard(self, dbName:str, dsId:str):
+        '''Метод создания пустого дашборда.'''
         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards'
         data = {'dashboardName': dbName,
                 'dataset': {'datasetId': dsId, 'workspaceId': self.__wsId}
@@ -80,6 +84,7 @@ class DashboardService(ApiRequest):
         return self.__response.json()
     
     def importDashboard(self, dbId: str, data: dict):
+        '''Метод импорта данных дашборда.'''
         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}'
         data = {'Dashboard': data}
         headers = self.__headers
@@ -89,9 +94,21 @@ class DashboardService(ApiRequest):
         return self.__response
     
     def importDashboardMeasure(self, dbId:str, data: dict):
+        '''Метод импорта мер на дашбордах'''
         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/measures'
         headers = self.__headers
         headers['Content-Type'] = 'application/json'
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata=data)
         self.__response = super().sendRequest()
         return self.__response.content.decode('utf-8')
+    
+    def vis2Import(self, mongoAddress:str, mongoUser:str, mongoPass:str, dsId:str):
+        '''Метод импорта дашбордов (пользовательских тем и виджетов) из 2й версии платформы.'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/visiology2/import'
+        self.__request = {
+            'MongoDbConnectionString': f'mongodb://{mongoUser}:{mongoPass}@{mongoAddress}:27017/VisiologyVA',
+            'Dataset': {'DatasetId': dsId, 'WorkspaceId': self.__wsId}
+        }
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=self.__request)
+        self.__response = super().sendRequest()
+        return self.__response.json()
