@@ -38,3 +38,10 @@ class WorkspaceService(ApiRequest):
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=roleData)
         self.__response = super().sendRequest()
         return self.__response
+    
+    def getUsers(self):
+        '''Метод получения списка пользователей с данными об активности.'''
+        self.__endpoint = 'workspace-service/api/v1/access/users'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
