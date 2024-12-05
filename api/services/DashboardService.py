@@ -112,3 +112,15 @@ class DashboardService(ApiRequest):
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=self.__request)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def healthCheck(self):
+        self.__endpoint = f'dashboard-service/health'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
+    
+    def getDSVersion(self):
+        self.__endpoint = f'dashboard-service/version'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
