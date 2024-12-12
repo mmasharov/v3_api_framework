@@ -6,7 +6,7 @@ class FormulaEngineService(ApiRequest):
     '''Класс взаимодействия с сервисом formula-engine'''
     def __init__(self, protocol: str, address: str, cert: Union[str, bool], bearer: str, wsId: str):
         '''Инициализация экземпляра общих свойств соединения с сервисом formula-engine'''
-        self.__entities = ['datasets', 'relationships']
+        self.__entities = ['datasets', 'relationships', 'measures']
         self.__protocol = protocol
         self.__address = address
         self.__cert = cert
@@ -57,5 +57,12 @@ class FormulaEngineService(ApiRequest):
         headers['If-Match'] = str(version)
         headers['Content-Type'] = 'application/json'
         super().__init__('put', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata=data)
+        self.__response = super().sendRequest()
+        return self.__response.content.decode('utf-8')
+    
+    def getMeasures(self, dsId:str, tId:str):
+        '''Метод получения мер привязанных к таблице набора данных'''
+        self.__endpoint = f'formula-engine/api/v1/workspaces/{self.__wsId}/datasets/{dsId}/tables/{tId}/measures'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.content.decode('utf-8')
