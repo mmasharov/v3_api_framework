@@ -124,3 +124,10 @@ class DashboardService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def getRegularReports(self):
+        '''Метод получения списка регламентных отчетов'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/regular-report'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()

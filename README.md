@@ -319,6 +319,8 @@ api -> services -> DashboardService.py
     Метод получения информации о состоянии сервера
 - getDSVersion
     Метод получения сведений о версии компонента Dashboard Service
+- getRegularReports
+    Метод получения списка регламентных отчетов
 
 ### Базовый класс запросов к API
 
