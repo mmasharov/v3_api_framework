@@ -117,3 +117,12 @@ class DataManagementService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def triggerScheduledUpdate(self, version):
+        '''Метод запуска запланированного обновления набора данных'''
+        self.__endpoint = f'data-management-service/api/v1/workspaces/{self.__wsId}/scheduled-refresh/{self.__dsId}/Trigger'
+        headers = self.__headers
+        headers['If-Match'] = str(version)
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata={})
+        self.__response = super().sendRequest()
+        return self.__response.content.decode('utf-8')
