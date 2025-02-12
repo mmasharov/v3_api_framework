@@ -45,3 +45,17 @@ class WorkspaceService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def getGroups(self):
+        '''Метод получения списка групп.'''
+        self.__endpoint = 'workspace-service/api/v1/groups'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
+    
+    def getGroupUsers(self, gIds:list):
+        '''Метод получения пользователей групп'''
+        self.__endpoint = 'workspace-service/api/v1/groups/query-by-ids/users'
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=gIds)
+        self.__response = super().sendRequest()
+        return self.__response.json()
