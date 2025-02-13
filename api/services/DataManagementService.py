@@ -126,3 +126,10 @@ class DataManagementService(ApiRequest):
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata={})
         self.__response = super().sendRequest()
         return self.__response.content.decode('utf-8')
+    
+    def getScheduleJobs(self):
+        '''Метод получения заданий обновлений наборов данных рабочей области.'''
+        self.__endpoint = f'data-management-service/api/v1/workspaces/{self.__wsId}/scheduled-refresh/GetAll'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
