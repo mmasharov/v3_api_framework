@@ -66,3 +66,10 @@ class FormulaEngineService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.content.decode('utf-8')
+    
+    def getDatasetPermissions(self, dsId:str):
+        '''Метод получения сведений о доступах пользователей к набору данных'''
+        self.__endpoint = f'formula-engine/api/v1/workspaces/{self.__wsId}/datasets/{dsId}/permission-mappings'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()

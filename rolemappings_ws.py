@@ -9,7 +9,7 @@ ADDRESS = 'visiology.domain.local' # Адрес платформы (без v3)
 USER = 'admin' # Имя пользователя (с административными правами)
 PASS = '123456' # Пароль
 CERT = 'e:/projects/v3migrate/vis.crt' # Путь к файлу сертификата, если используется самоподписанный https При использовании http вместо строки присвоить False
-FILE = 'd:/temp/rolemappings.csv' # Путь к CSV файлу в который будут записаны данные
+FILE = 'd:/temp/rolemappings_workspace.csv' # Путь к CSV файлу в который будут записаны данные
 
 token = AuthService(PROTOCOL, ADDRESS, CERT, USER, PASS).getBearerString()
 

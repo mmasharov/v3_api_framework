@@ -131,3 +131,10 @@ class DashboardService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+
+    def getDashboardPermissions(self, dbId:str):
+        '''Метод получения сведений о доступах пользователей к дашборду'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/permission-mappings'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
