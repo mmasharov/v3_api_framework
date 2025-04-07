@@ -73,3 +73,14 @@ class FormulaEngineService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def tableQuery(self, dsId:str, table:str):
+        '''Метод DAX запроса данных таблицы (1я тысяча записей)'''
+        self.__endpoint = f'formula-engine/api/v1/workspaces/{self.__wsId}/datasets/{dsId}/model/query'
+        payload = {
+            "expression": f"EVALUATE {{COUNTROWS('{table}')}} EVALUATE TOPNSKIP(1000,0,'{table}')",
+            "format": "JsonCompact"
+        }
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=payload)
+        self.__response = super().sendRequest()
+        return self.__response.json()
