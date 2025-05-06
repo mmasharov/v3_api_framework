@@ -147,3 +147,10 @@ class DashboardService(ApiRequest):
             return self.__response.json()
         else:
             return {"error": "Wrong role or depth value"}
+    
+    def getWidgetDataDax(self, dbId:str, wId:str):
+        '''Метод получения данных виджета в формате DAX'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/widgets/{wId}/data/by-widget-id'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
