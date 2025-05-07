@@ -133,3 +133,10 @@ class DataManagementService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def getNetworkStorage(self):
+        '''Метод получения информации о настроенных сетевых папках.'''
+        self.__endpoint = f'data-management-service/api/v1/NetworkStorage'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
