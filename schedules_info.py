@@ -10,7 +10,7 @@ PROTOCOL = 'https' # Протокол соединения: http или https
 ADDRESS = 'visiology.domain.local' # Адрес платформы (без v3)
 USER = 'admin' # Имя пользователя (с административными правами)
 PASS = '123456' # Пароль
-CERT = 'e:/projects/v3migrate/vis.crt' # Путь к файлу сертификата, если используется самоподписанный https При использовании http вместо строки присвоить False
+CERT = 'd:/projects/v3migrate/vis.crt' # Путь к файлу сертификата, если используется самоподписанный https При использовании http вместо строки присвоить False
 FILE = 'd:/temp/schedules.csv' # Путь к CSV файлу в который будут записаны данные
 
 token = AuthService(PROTOCOL, ADDRESS, CERT, USER, PASS).getBearerString()
@@ -37,9 +37,9 @@ for workspace in wss.getList():
                     for table in data[0]['scheduledLoaderTables']:
                         meta = list(filter(lambda x: x['id'] == table['tableId'], model['tables']))
                         if table['isEnabled']:
-                            result.append(['on', workspace['name'], dataset[1], meta[0]['name'], data[0]['crons']])
+                            result.append(['on', workspace['name'], dataset[1], meta[0]['name'], table['crons']])
                         else:
-                            result.append(['off', workspace['name'], dataset[1], meta[0]['name'], data[0]['crons']])
+                            result.append(['off', workspace['name'], dataset[1], meta[0]['name'], table['crons']])
 
 with open(FILE, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
