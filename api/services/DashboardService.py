@@ -33,7 +33,7 @@ class DashboardService(ApiRequest):
         elif entity == 'dbmeasures' and objectId != 'list':
             self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{objectId}/measures'
         else:
-            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}/{objectId}'
+            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}/{objectId}?withHiddenSheets=true'
         
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest().json()
@@ -140,7 +140,7 @@ class DashboardService(ApiRequest):
         return self.__response.json()
     
     def getDashboardTree(self, minRole:str, depth:int):
-        if (minRole in ['viewer', 'contributor', 'member', 'administartor'] and depth in [0, 1, 2, 3]):
+        if (minRole in ['viewer', 'contributor', 'member', 'administrator'] and depth in [0, 1, 2, 3]):
             self.__endpoint = f'dashboard-service/api/dashboards?minRole={minRole}&depth={str(depth)}'
             super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
             self.__response = super().sendRequest()
