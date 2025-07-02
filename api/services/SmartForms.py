@@ -88,6 +88,13 @@ class SmartForms(ApiRequest):
         self.__response = super().sendRequest().json()
         return self.__response
     
+    def addMGElements(self, mgName:str, data:list):
+        '''Метод добавления элементов в группу показателей'''
+        self.__endpoint = f'smart-forms/api/measuregroups/{mgName}/elements'
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=data)
+        self.__response = super().sendRequest().json()
+        return self.__response
+    
     def getMGelementsDetails(self, mgName:str):
         '''Метод получения элементов группы показателей с именами измерений и их элементами'''
         self.__endpoint = f'smart-forms/api/measuregroups/{mgName}/elements/details'
