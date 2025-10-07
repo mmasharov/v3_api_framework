@@ -84,3 +84,10 @@ class FormulaEngineService(ApiRequest):
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=payload)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def getRoleMemberships(self, dsId:str, rId:str):
+        '''Метод получения пользователей назначеных в роли RLS/OLS'''
+        self.__endpoint = f'formula-engine/api/v1/workspaces/{self.__wsId}/datasets/{dsId}/roles/{rId}/memberships'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.content.decode('utf-8')
