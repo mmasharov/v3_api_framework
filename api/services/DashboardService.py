@@ -154,3 +154,28 @@ class DashboardService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def exportDashboard(self, dbId:str, data:dict, type:int):
+        '''Метод экспорта дашборда в файл'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/export'
+        self.__request = {
+            "Dashboard": data,
+            "DocumentType": type
+        }
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=self.__request)
+        self.__response = super().sendRequest()
+        return self.__response.text
+    
+    def getMailSchedulesList(self):
+        '''Метод получения списка почтовых рассылок'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/scheduled-reports/dashboard'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
+    
+    def getMailSchedule(self, rId:str):
+        '''Метод получения информации о почтовой рассылке'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/scheduled-reports/dashboard/{rId}'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
