@@ -6,7 +6,10 @@ class ApiRequest:
     '''Класс для отправки запросов к API Visiology3'''
     def __init__(self, method: str, protocol: str, address: str, cert: Union[str, bool], endpoint='', headers:dict={}, data:dict={}, jsondata:dict={}, files='') -> None:
         '''Инициализация данных объекта запроса'''
-        self.__method = method
+        if method in ['get', 'post', 'put']:
+            self.__method = method
+        else:
+            raise Exception('Неизвестный метод запроса к API.')
         self.__url = f'{protocol}://{address}/v3/{endpoint}'
         if self.__method == 'http':
             self.__cert = False
