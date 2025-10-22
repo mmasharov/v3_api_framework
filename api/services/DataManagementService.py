@@ -140,3 +140,24 @@ class DataManagementService(ApiRequest):
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response.json()
+    
+    def getWorkspaceDatasources(self):
+        '''Метод получения подключений JDBC рабочей области'''
+        self.__endpoint = f'data-management-service/api/v1/workspaces/{self.__wsId}/datasources/all'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
+    
+    def getDatasetDatasources(self):
+        '''Метод получения подключений JDBC набора данных'''
+        self.__endpoint = f'data-management-service/api/v1/workspaces/{self.__wsId}/datasets/{self.__dsId}/datasources/all'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
+    
+    def getTableDatasource(self, tId:str):
+        '''Метод получения подключения JDBC таблицы'''
+        self.__endpoint = f'data-management-service/api/v1/workspaces/{self.__wsId}/datasets/{self.__dsId}/datasources/JDBC/{tId}'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response.json()
