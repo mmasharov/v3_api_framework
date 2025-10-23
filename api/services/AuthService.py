@@ -20,19 +20,28 @@ class AuthService(ApiRequest):
         
         super().__init__('post', protocol, address, cert, self.__endpoint, self.__headers, self.__data)
         self.__timeRecieved = time.time()
-        self.__response = super().sendRequest().json()
+        self.__response = super().sendRequest()
     
     def getBearerString(self):
         '''Метод получения строки с токеном авторизации'''
-        if type(self.__response) is dict:
+        if type(self.__response) is dict and 'access_token' in self.__response:
             return f'Bearer {self.__response["access_token"]}'
         else:
-            return self.__response
+            print(self.__response)
+            raise Exception('В ответе сервера отсутствует токен авторизации.')
         
     def isExpired(self) -> bool:
         '''Метод проверки срока действия токена'''
-        self.__expire_time = self.__timeRecieved + self.__response['expires_in']
-        if self.__expire_time <= time.time():
-            return True
+        if 'expires_in' in self.__response:
+            self.__expire_time = self.__timeRecieved + self.__response['expires_in']
+            if self.__expire_time <= time.time():
+                return True
+            else:
+                return False
+        elif 'expires_at' in self.__response:
+            if time.time() >= self.__response['expires_at']:
+                return True
+            else:
+                return False
         else:
-            return False
+            raise Exception('В ответе сервера авторизации отсутствуют данные о сроке действия токена.')

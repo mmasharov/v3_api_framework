@@ -11,6 +11,8 @@ class ApiRequest:
         else:
             raise Exception('Неизвестный метод запроса к API: {method}')
         if protocol in ['http', 'https']:
+            if address[-1] == '/':
+                address = address[:-1]
             self.__url = f'{protocol}://{address}/{endpoint}'
             if protocol == 'http':
                 self.__cert = False
