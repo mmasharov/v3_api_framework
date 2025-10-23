@@ -4,7 +4,7 @@ from typing import Union
 
 class ApiRequest:
     '''Класс для отправки запросов к API Visiology3'''
-    def __init__(self, method: str, protocol: str, address: str, cert: Union[str, bool], endpoint='', headers:dict={}, data: Union[dict, str]={}) -> None:
+    def __init__(self, method: str, protocol: str, address: str, cert: Union[str, bool], endpoint='', headers:dict={}, data: Union[dict, list, str]={}) -> None:
         '''Инициализация данных объекта запроса'''
         if method in ['get', 'post', 'put']:
             self.__method = method
@@ -22,7 +22,7 @@ class ApiRequest:
         else:
             raise Exception(f'Не поддерживаемый протокол запроса: {protocol}')
         self.__headers = headers
-        if type(data) is dict:
+        if type(data) in [dict, list, str]:
             self.__data = data
         else:
             raise Exception('Неизвестный тип тела запроса.')
@@ -31,15 +31,14 @@ class ApiRequest:
         '''Метод отправки запроса к API'''
         if self.__method == 'get':
             self.__response = requests.get(self.__url, headers=self.__headers, verify=self.__cert)
-        elif self.__method == 'post':
-            if self.__data:
-                self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
-            else:
-                self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, data={})
+        elif self.__method == 'post' and type(self.__data) is dict and 'grant_type' in self.__data:
+            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
+        elif self.__method == 'post' and type(self.__data) in [dict, list]:
+            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json=self.__data)
         elif self.__method == 'put':
             if self.__data:
                 self.__response = requests.put(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
         if self.__response.status_code == 200:
             return self.__response.json()
         else:
-            return {"ApiRequestError": f'Статус запроса: {self.__response.status_code}'}
+            return {"ApiRequestError": f'Статус запроса: {self.__response.status_code}', "info": f'{self.__response.reason}'}
