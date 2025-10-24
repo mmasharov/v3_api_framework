@@ -32,10 +32,10 @@ class WorkspaceService(ApiRequest):
         self.__response = super().sendRequest()
         return self.__response.json()
     
-    def importRoleMapping(self, roleData:dict):
-        '''Метод импорта сведений о пользовательских ролях'''
+    def createWorkspace(self, wsData:dict):
+        '''Метод создания рабочей области'''
         self.__endpoint = 'workspace-service/api/v1/workspaces'
-        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=roleData)
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=wsData)
         self.__response = super().sendRequest()
         return self.__response
     
