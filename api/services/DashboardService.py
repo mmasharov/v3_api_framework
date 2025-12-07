@@ -14,39 +14,72 @@ class DashboardService(ApiRequest):
         self.__headers = {'Authorization': f'{bearer}'}
         self.__wsId = wsId
 
-    def getDSEntity(self, entity: str, objectId: str='list') -> Union[list, dict]:
-        '''Метод получения объектов от сервиса дашбордов.\n
-        Отдает либо список ид-имя для сущности, если не указан идентефикатор конкретной сущности,\n
-        либо отдельный объект сущности если вторым аргументом указана идентификатор'''
-
-        if entity not in self.__entities:
-            raise Exception('Unknown entity!')
-
-        if entity == 'user-widgets' and objectId == 'list':
-            self.__endpoint = f'dashboard-service/api/user-widgets'
-        elif entity == 'user-widgets' and objectId != 'list':
-            self.__endpoint = f'dashboard-service/api/user-widgets/{objectId}'
-        elif entity != 'user-widgets' and objectId == 'list':
-            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}'
-        elif entity == 'themes' and objectId != 'list':
-            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/themes/{objectId}/export'
-        elif entity == 'dbmeasures' and objectId != 'list':
-            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{objectId}/measures'
-        else:
-            self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}/{objectId}?withHiddenSheets=true'
-        
+    def getDashboardList(self):
+        '''Метод получения списка дашбордов рабочей области с базовой информацией'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest().json()
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def createDashboard(self, dbName:str, dsId:str):
+        '''Метод создания пустого дашборда.'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards'
+        self.__data = {'dashboardName': dbName,
+                'dataset': {'datasetId': dsId, 'workspaceId': self.__wsId}
+            }
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, data=self.__data)
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def getDashboard(self, dbId:str):
+        '''Метод получения метаданных дашборда'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def importDashboard(self, dbId: str, dbData: dict):
+        '''Метод импорта данных дашборда.'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}'
+        self.__data = {'dashboard': dbData}
+        headers = self.__headers
+        headers['Content-Type'] = 'application/json'
+        super().__init__('put', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, data=self.__data)
+        self.__response = super().sendRequest()
+        return self.__response
+    # def getDSEntity(self, entity: str, objectId: str='list') -> Union[list, dict]:
+    #     '''Метод получения объектов от сервиса дашбордов.\n
+    #     Отдает либо список ид-имя для сущности, если не указан идентефикатор конкретной сущности,\n
+    #     либо отдельный объект сущности если вторым аргументом указана идентификатор'''
+
+    #     if entity not in self.__entities:
+    #         raise Exception('Unknown entity!')
+
+    #     if entity == 'user-widgets' and objectId == 'list':
+    #         self.__endpoint = f'dashboard-service/api/user-widgets'
+    #     elif entity == 'user-widgets' and objectId != 'list':
+    #         self.__endpoint = f'dashboard-service/api/user-widgets/{objectId}'
+    #     elif entity != 'user-widgets' and objectId == 'list':
+    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}'
+    #     elif entity == 'themes' and objectId != 'list':
+    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/themes/{objectId}/export'
+    #     elif entity == 'dbmeasures' and objectId != 'list':
+    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{objectId}/measures'
+    #     else:
+    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}/{objectId}?withHiddenSheets=true'
         
-        if objectId == 'list':
-            if entity == 'dashboards':
-                return list(map((lambda ob: [ob['guid'], ob['name']]), self.__response))
-            elif entity == 'themes':
-                return list(filter((lambda ob: not ob['isSystem']), self.__response))
-            elif entity == 'user-widgets':
-                return list(map((lambda ob: [ob['guid'], ob['name']]), self.__response['userWidgetList']))
-        else:
-            return self.__response
+    #     super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+    #     self.__response = super().sendRequest().json()
+        
+    #     if objectId == 'list':
+    #         if entity == 'dashboards':
+    #             return list(map((lambda ob: [ob['guid'], ob['name']]), self.__response))
+    #         elif entity == 'themes':
+    #             return list(filter((lambda ob: not ob['isSystem']), self.__response))
+    #         elif entity == 'user-widgets':
+    #             return list(map((lambda ob: [ob['guid'], ob['name']]), self.__response['userWidgetList']))
+    #     else:
+    #         return self.__response
         
     def getDefaultTheme(self):
         '''Метод получения идентификатора темы по умолчанию.'''
@@ -73,25 +106,9 @@ class DashboardService(ApiRequest):
         self.__response = super().sendRequest()
         print(self.__response.status_code, self.__response.text)
     
-    def createDashboard(self, dbName:str, dsId:str):
-        '''Метод создания пустого дашборда.'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards'
-        data = {'dashboardName': dbName,
-                'dataset': {'datasetId': dsId, 'workspaceId': self.__wsId}
-            }
-        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=data)
-        self.__response = super().sendRequest()
-        return self.__response.json()
     
-    def importDashboard(self, dbId: str, data: dict):
-        '''Метод импорта данных дашборда.'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}'
-        data = {'Dashboard': data}
-        headers = self.__headers
-        headers['Content-Type'] = 'application/json'
-        super().__init__('put', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata=data)
-        self.__response = super().sendRequest()
-        return self.__response
+    
+    
     
     def importDashboardMeasure(self, dbId:str, data: dict):
         '''Метод импорта мер на дашбордах'''

@@ -5,7 +5,7 @@ from api.ApiRequest import ApiRequest
 class WorkspaceService(ApiRequest):
     '''Класс взаимодействия с рабочими областями'''
     def __init__(self, protocol: str, address: str, cert: Union[str, bool], bearer: str):
-        '''Инициализация объекта со списком рабочих областей'''
+        '''Инициализация объекта компонента работы с рабочими областями'''
         self.__protocol = protocol
         self.__address = address
         self.__cert = cert

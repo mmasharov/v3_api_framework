@@ -36,8 +36,8 @@ class ApiRequest:
         elif self.__method == 'post' and type(self.__data) in [dict, list]:
             self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json=self.__data)
         elif self.__method == 'put':
-            if self.__data:
-                self.__response = requests.put(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
+            if self.__data and type(self.__data) is dict:
+                self.__response = requests.put(self.__url, headers=self.__headers, verify=self.__cert, json=self.__data)
         if self.__response.status_code == 200:
             return self.__response.json()
         else:
