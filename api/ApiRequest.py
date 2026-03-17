@@ -4,7 +4,7 @@ from typing import Union
 
 class ApiRequest:
     '''Класс для отправки запросов к API Visiology3'''
-    def __init__(self, method: str, protocol: str, address: str, cert: Union[str, bool], endpoint='', headers:dict={}, data: Union[dict, list, str]={}) -> None:
+    def __init__(self, method: str, protocol: str, address: str, cert: Union[str, bool], endpoint='', headers:dict={}, data: Union[dict, list, str]={}, json: Union[dict, list]={}, files: Union[dict, list]={}, params:dict={}) -> None:
         '''Инициализация данных объекта запроса'''
         if method in ['get', 'post', 'put']:
             self.__method = method
@@ -22,23 +22,31 @@ class ApiRequest:
         else:
             raise Exception(f'Не поддерживаемый протокол запроса: {protocol}')
         self.__headers = headers
-        if type(data) in [dict, list, str]:
-            self.__data = data
-        else:
-            raise Exception('Неизвестный тип тела запроса.')
+        self.__data = data
+        self.__json = json
+        self.__files = files
+        self.__params = params
     
     def sendRequest(self):
         '''Метод отправки запроса к API'''
-        if self.__method == 'get':
+        if self.__method == 'get' and self.__params:
+            self.__response = requests.get(self.__url, headers=self.__headers, verify=self.__cert, params=self.__params)
+        elif self.__method == 'get' and not self.__params:
             self.__response = requests.get(self.__url, headers=self.__headers, verify=self.__cert)
-        elif self.__method == 'post' and type(self.__data) is dict and 'grant_type' in self.__data:
+        elif self.__method == 'post' and self.__data:
             self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
-        elif self.__method == 'post' and type(self.__data) in [dict, list]:
-            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json=self.__data)
-        elif self.__method == 'put':
-            if self.__data and type(self.__data) is dict:
-                self.__response = requests.put(self.__url, headers=self.__headers, verify=self.__cert, json=self.__data)
+        elif self.__method == 'post' and self.__json:
+            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json=self.__json)
+        elif self.__method == 'post' and self.__files:
+            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, files=self.__files)
+        elif self.__method == 'put' and self.__json:
+            self.__response = requests.put(self.__url, headers=self.__headers, verify=self.__cert, json=self.__json)
+        else:
+            raise Exception('Неизвестный тип запроса или неверные входные данные.')
+        
         if self.__response.status_code == 200:
             return self.__response.json()
+        elif self.__response.status_code == 204:
+            return {"Status": "Success. Code 204."}
         else:
             return {"ApiRequestError": f'Статус запроса: {self.__response.status_code}', "info": f'{self.__response.reason}'}

@@ -18,7 +18,7 @@ class AuthService(ApiRequest):
             'password': password
         }
         
-        super().__init__('post', protocol, address, cert, self.__endpoint, self.__headers, self.__data)
+        super().__init__('post', protocol, address, cert, self.__endpoint, self.__headers, data=self.__data)
         self.__timeRecieved = time.time()
         self.__response = super().sendRequest()
     

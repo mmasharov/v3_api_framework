@@ -10,10 +10,20 @@ class WorkspaceService(ApiRequest):
         self.__address = address
         self.__cert = cert
         self.__headers = {'Authorization': f'{bearer}'}
+    
+    def getIdentifiers(self) -> list:
+        '''Метод получения списка идентификаторов рабочих областей'''
+        self.__endpoint = 'workspace-service/api/v1/workspaces/identifiers'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
 
-    def getList(self) -> list:
-        '''Метод получения списка рабочих областей'''
-        self.__endpoint = 'workspace-service/api/v1/workspaces'
+    def getWorkspaces(self, wsId:str='') -> Union[list, dict]:
+        '''Метод получения сведений о рабочих областях'''
+        if wsId:
+            self.__endpoint = f'workspace-service/api/v1/workspaces/{wsId}'
+        else:
+            self.__endpoint = 'workspace-service/api/v1/workspaces'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response
@@ -43,7 +53,7 @@ class WorkspaceService(ApiRequest):
         '''Метод получения пользователей групп'''
         self.__endpoint = 'workspace-service/api/v1/groups/query-by-ids/users'
         if gIds:
-            super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, data=gIds)
+            super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=gIds)
             self.__response = super().sendRequest()
             return self.__response
         else:
@@ -63,7 +73,7 @@ class WorkspaceService(ApiRequest):
         '''Метод импорта сведений о пользовательских ролях'''
         if wsData and 'name' in wsData and wsData['name'] not in list(map(lambda x: x['name'], self.getList())):
             self.__endpoint = 'workspace-service/api/v1/workspaces'
-            super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, data=wsData)
+            super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=wsData)
             self.__response = super().sendRequest()
             return self.__response
         elif wsData and 'name' in wsData and wsData['name'] in list(map(lambda x: x['name'], self.getList())):
