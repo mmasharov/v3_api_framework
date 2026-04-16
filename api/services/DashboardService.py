@@ -5,9 +5,7 @@ from api.ApiRequest import ApiRequest
 class DashboardService(ApiRequest):
     '''Класс взаимодействия с дашбордами'''
     def __init__(self, protocol: str, address: str, cert: Union[str, bool], bearer: str):
-        '''Инициализация экземпляра общих параметров для соединения с dashboard-service.\n
-        Сущности: "dashboards", "user-widgets", "themes"'''
-        self.__entities = ['dashboards', 'themes', 'user-widgets', 'dbmeasures']
+        '''Инициализация экземпляра общих параметров для соединения с dashboard-service.'''
         self.__protocol = protocol
         self.__address = address
         self.__cert = cert
@@ -47,8 +45,8 @@ class DashboardService(ApiRequest):
         Возвращает объект с идентификатором созданного дашборда.'''
         self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/dashboards'
         self.__data = {'dashboardName': dbName,
-                'dataset': dsInfo
-            }
+                    'dataset': dsInfo
+                    }
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=self.__data)
         self.__response = super().sendRequest()
         return self.__response
@@ -173,67 +171,57 @@ class DashboardService(ApiRequest):
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, files=widgetData)
         self.__response = super().sendRequest()
         return self.__response
-    # def getDSEntity(self, entity: str, objectId: str='list') -> Union[list, dict]:
-    #     '''Метод получения объектов от сервиса дашбордов.\n
-    #     Отдает либо список ид-имя для сущности, если не указан идентефикатор конкретной сущности,\n
-    #     либо отдельный объект сущности если вторым аргументом указана идентификатор'''
-
-    #     if entity not in self.__entities:
-    #         raise Exception('Unknown entity!')
-    #     elif entity != 'user-widgets' and objectId == 'list':
-    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/{entity}'
-    #     elif entity == 'dbmeasures' and objectId != 'list':
-    #         self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{objectId}/measures'
-        
-    #     super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-    #     self.__response = super().sendRequest().json()
     
-    def importDashboardMeasure(self, dbId:str, data: dict):
+    def getDashboardMeasures(self, wsId:str, dbId:str) -> list:
+        '''Метод получения мер дашборда'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/dashboards/{dbId}/measures'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def importDashboardMeasure(self, wsId:str, dbId:str, measureData: dict):
         '''Метод импорта мер на дашбордах'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/measures'
+        self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/dashboards/{dbId}/measures'
         headers = self.__headers
         headers['Content-Type'] = 'application/json'
-        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, jsondata=data)
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=headers, json=measureData)
         self.__response = super().sendRequest()
-        return self.__response.content.decode('utf-8')
+        return self.__response
     
-    def vis2Import(self, mongoAddress:str, mongoUser:str, mongoPass:str, dsId:str):
+    def getWidgetDataDax(self, wsId:str, dbId:str, wId:str):
+        '''Метод получения данных виджета по его идентификатору, в формате DAX ответа от FormulaEngine'''
+        self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/dashboards/{dbId}/widgets/{wId}/data/by-widget-id'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def getRegularReports(self, wsId:str, rId:str=''):
+        '''Метод получения списка регламентных отчетов или сведений об отчете'''
+        if rId:
+            self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/regular-report/{rId}'
+        else:
+            self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/regular-report'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
+    
+    def getMailSchedules(self, wsId:str, msId:str=''):
+        '''Метод получения списка почтовых рассылок или сведений о рассылке'''
+        if msId:
+            self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/scheduled-reports/dashboard/{msId}'
+        else:
+            self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/scheduled-reports/dashboard'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest()
+        return self.__response
+  
+    def vis2Import(self, wsId:str, mongoAddress:str, mongoUser:str, mongoPass:str, dsId:str):
         '''Метод импорта дашбордов (пользовательских тем и виджетов) из 2й версии платформы.'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/visiology2/import'
+        self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/visiology2/import'
         self.__request = {
             'MongoDbConnectionString': f'mongodb://{mongoUser}:{mongoPass}@{mongoAddress}:27017/VisiologyVA',
-            'Dataset': {'DatasetId': dsId, 'WorkspaceId': self.__wsId}
+            'Dataset': {'DatasetId': dsId, 'WorkspaceId': wsId}
         }
-        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, jsondata=self.__request)
+        super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=self.__request)
         self.__response = super().sendRequest()
-        return self.__response.json()
-    
-    def getRegularReports(self):
-        '''Метод получения списка регламентных отчетов'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/regular-report'
-        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest()
-        return self.__response.json()
-
-    def getWidgetDataDax(self, dbId:str, wId:str):
-        '''Метод получения данных виджета в формате DAX'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/dashboards/{dbId}/widgets/{wId}/data/by-widget-id'
-        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest()
-        return self.__response.json()
-    
-    
-    
-    def getMailSchedulesList(self):
-        '''Метод получения списка почтовых рассылок'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/scheduled-reports/dashboard'
-        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest()
-        return self.__response.json()
-    
-    def getMailSchedule(self, rId:str):
-        '''Метод получения информации о почтовой рассылке'''
-        self.__endpoint = f'dashboard-service/api/workspaces/{self.__wsId}/scheduled-reports/dashboard/{rId}'
-        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest()
-        return self.__response.json()
+        return self.__response
