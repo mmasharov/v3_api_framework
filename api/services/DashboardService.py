@@ -25,7 +25,7 @@ class DashboardService(ApiRequest):
         self.__response = super().sendRequest()
         return self.__response
     
-    def getDashboards(self, wsId:str, dbId:str='', hidden:bool=False) -> Union[list, dict]:
+    def getDashboards(self, wsId:str, dbId:str='', hidden:bool=True) -> Union[list, dict]:
         '''Метод получения списка дашбордов рабочей области или метаданных определенного дашборда'''
         if dbId:
             self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/dashboards/{dbId}'
