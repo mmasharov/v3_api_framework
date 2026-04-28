@@ -37,6 +37,8 @@ class ApiRequest:
             self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, data=self.__data)
         elif self.__method == 'post' and self.__json:
             self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json=self.__json)
+        elif self.__method == 'post' and self.__json == {}:
+            self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, json={})
         elif self.__method == 'post' and self.__files:
             self.__response = requests.post(self.__url, headers=self.__headers, verify=self.__cert, files=self.__files)
         elif self.__method == 'put' and self.__json:
@@ -45,7 +47,10 @@ class ApiRequest:
             raise Exception('Неизвестный тип запроса или неверные входные данные.')
         
         if self.__response.status_code == 200:
-            return self.__response.json()
+            if self.__response.headers['Content-Type'] == 'application/json':
+                return self.__response.json()
+            elif self.__response.headers['Content-Type'] == 'text/plain; charset=utf-8':
+                return self.__response.content.decode('utf-8')
         elif self.__response.status_code == 204:
             return {"Status": "Success. Code 204."}
         else:
