@@ -15,7 +15,7 @@ class Platform(ApiRequest):
         '''Метод получения версий компонентов платформы.'''
         self.__endpoint = 'version'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
-        self.__response = super().sendRequest().json()
-        for item in self.__response:
-            self.__response[item] = self.__response[item]['VERSION']
+        self.__response = super().sendRequest()
+        # for item in self.__response:
+        #     self.__response[item] = self.__response[item]['VERSION']
         return self.__response

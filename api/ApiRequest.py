@@ -47,7 +47,7 @@ class ApiRequest:
             raise Exception('Неизвестный тип запроса или неверные входные данные.')
         
         if self.__response.status_code == 200:
-            if self.__response.headers['Content-Type'] == 'application/json':
+            if self.__response.headers['Content-Type'] == 'application/json' or self.__response.headers['Content-Type'] == 'application/json; charset=utf-8':
                 return self.__response.json()
             elif self.__response.headers['Content-Type'] == 'text/plain; charset=utf-8':
                 return self.__response.content.decode('utf-8')
