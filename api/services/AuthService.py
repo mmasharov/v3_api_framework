@@ -13,7 +13,7 @@ class AuthService(ApiRequest):
         self.__data = {
             'client_id':'visiology_designer',
             'grant_type':'password',
-            'scope':'openid data_management_service formula_engine workspace_service dashboard_service forms_service groups',
+            'scope':'openid data_management_service formula_engine workspace_service dashboard_service edge_service forms_service groups profile email',
             'username': user,
             'password': password
         }

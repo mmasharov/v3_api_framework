@@ -19,3 +19,9 @@ class Platform(ApiRequest):
         for item in self.__response:
             self.__response[item] = self.__response[item]['VERSION']
         return self.__response
+    
+    def accessMonitoring(self):
+        self.__endpoint = 'access-monitoring-service/access-monitoring/groups'
+        super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
+        self.__response = super().sendRequest().json()
+        return self.__response
