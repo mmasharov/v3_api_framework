@@ -42,9 +42,9 @@ class WorkspaceService(ApiRequest):
         self.__response = super().sendRequest()
         return self.__response
     
-    def getGroups(self) -> list:
-        '''Метод получения списка групп.'''
-        self.__endpoint = 'workspace-service/api/v1/groups'
+    def getGroups(self, take:int=10) -> list:
+        '''Метод получения списка групп.\nПараметр take задает максимальное количество выборки. По умолчанию - 10'''
+        self.__endpoint = f'workspace-service/api/v1/groups?take={take}'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
         return self.__response
