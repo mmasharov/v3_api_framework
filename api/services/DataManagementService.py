@@ -74,6 +74,7 @@ class DataManagementService(ApiRequest):
         return self.__response
     
     def getExcelDataSource(self, wsId:str, dsId:str, sourceId:str):
+        '''Метод получения сведений об источнике данных Excel.'''
         self.__endpoint = f'data-management-service/api/v1/workspaces/{wsId}/datasets/{dsId}/datasources/Excel/{sourceId}'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
@@ -107,6 +108,7 @@ class DataManagementService(ApiRequest):
         return self.__response
     
     def getCSVDataSource(self, wsId:str, dsId:str, sourceId:str):
+        '''Метод получения сведений об источнике данных CSV.'''
         self.__endpoint = f'data-management-service/api/v1/workspaces/{wsId}/datasets/{dsId}/datasources/CSV/{sourceId}'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()
@@ -122,7 +124,7 @@ class DataManagementService(ApiRequest):
         return self.__response
     
     def checkOperations(self, wsId:str, dsId:str):
-        '''Метод проверки операций с данными модели'''
+        '''Метод проверки операций над набором данных.'''
         self.__endpoint = f'data-management-service/api/v1/workspaces/{wsId}/datasets/{dsId}/model/operations'
         super().__init__('get', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers)
         self.__response = super().sendRequest()

@@ -19,7 +19,7 @@ class WorkspaceService(ApiRequest):
         return self.__response
 
     def getWorkspaces(self, wsId:str='') -> Union[list, dict]:
-        '''Метод получения сведений о рабочих областях'''
+        '''Метод получения списка рабочих областей или сведений о рабочей области'''
         if wsId:
             self.__endpoint = f'workspace-service/api/v1/workspaces/{wsId}'
         else:
@@ -70,7 +70,7 @@ class WorkspaceService(ApiRequest):
             raise Exception('Отсутствует идентификатор рабочей области.')
     
     def createWorkspace(self, wsData:dict) -> dict:
-        '''Метод импорта сведений о пользовательских ролях'''
+        '''Метод создания рабочей области'''
         if wsData and 'name' in wsData and wsData['name'] not in list(map(lambda x: x['name'], self.getList())):
             self.__endpoint = 'workspace-service/api/v1/workspaces'
             super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=wsData)

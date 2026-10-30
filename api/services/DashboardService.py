@@ -125,7 +125,7 @@ class DashboardService(ApiRequest):
         return self.__response
     
     def getUserWidgets(self, widgetId:str='') -> list:
-        '''Метод получения списка глобальных пользовательских виджетов или сведений о любом определенном виджете'''
+        '''Метод получения списка глобальных пользовательских виджетов или сведений об определенном виджете'''
         if widgetId:
             self.__endpoint = f'dashboard-service/api/user-widgets/{widgetId}'
         else:
@@ -149,7 +149,7 @@ class DashboardService(ApiRequest):
         return self.__response
     
     def createWSUserWidget(self, wsId:str, widgetData:dict):
-        '''Метод создания глобального пользовательского виджета из метаданных'''
+        '''Метод создания пользовательского виджета рабочей области из метаданных'''
         self.__endpoint = f'dashboard-service/api/workspaces/{wsId}/user-widgets'
         super().__init__('post', self.__protocol, self.__address, self.__cert, endpoint=self.__endpoint, headers=self.__headers, json=widgetData)
         self.__response = super().sendRequest()
