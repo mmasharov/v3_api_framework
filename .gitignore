@@ -1,7 +1,17 @@
 /.venv/
 __pycache__/
 /export/
+/app/
+/gui/
+/stats/
 
 /vis.crt
 /dev.py
 /dev2.py
+/main.py
+/api/middleware.py
+/rolemappings_db.py
+/rolemappings_ds.py
+/rolemappings_ws.py
+/schedules_info.py
+/datasets_info.py
